@@ -18,6 +18,8 @@ app.add_middleware(
 class Prompt(BaseModel):
     message: str
     personality: str
+    user_gender: str
+    ai_gender: str
 
 PERSONALITY_PROMPTS = {
     "friend": "You are a cheerful, funny best friend. Talk like a bubbly buddy and keep things light.",
@@ -27,13 +29,13 @@ PERSONALITY_PROMPTS = {
 
 @app.post("/ask")
 def ask_user(prompt: Prompt):
-    full_prompt = f"{PERSONALITY_PROMPTS[prompt.personality]}\n\nUser: {prompt.message}"
-    
+    full_prompt = f"{PERSONALITY_PROMPTS[prompt.personality]}\n\nUser (a {prompt.user_gender}): {prompt.message}"
+
     result = subprocess.run(
         ["ollama", "run", "llama3.1", full_prompt],
         capture_output=True, text=True
     )
-    
+
     return {"response": result.stdout.strip()}
 
 if __name__ == "__main__":
